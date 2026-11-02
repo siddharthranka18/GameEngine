@@ -935,3 +935,4 @@ Duration    3.23s
 - **TBD-001**: Maximum polygon vertex budget before triggering low-memory warnings on mobile/tablet browser clients.
 - **TBD-002**: WebAssembly (Wasm) physics acceleration benchmark comparison between Rapier and Ammo.js for future releases.
 - **TBD-003**: Selection of cloud backend provider if optional multi-user collaborative scene editing is enabled in future v4.0 releases.
+

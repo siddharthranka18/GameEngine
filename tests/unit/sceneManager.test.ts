@@ -91,4 +91,27 @@ describe('SceneManager (FR-06 to FR-11)', () => {
     SceneManager.setVisibility(scene, obj.id, false);
     expect(scene.gameObjects[obj.id].visible).toBe(false);
   });
+
+  it('TEST-SCENE-07: Adds Torus, PointLight, SpotLight and configures light and behavior', () => {
+    const scene = SceneManager.createDefaultScene('proj-123', 'FeatureScene');
+
+    const torus = SceneManager.addGameObject(scene, 'Torus', 'Donut').data!;
+    const pointLight = SceneManager.addGameObject(scene, 'PointLight', 'Lamp').data!;
+    const spotLight = SceneManager.addGameObject(scene, 'SpotLight', 'Flashlight').data!;
+
+    expect(torus.type).toBe('Torus');
+    expect(pointLight.type).toBe('PointLight');
+    expect(spotLight.type).toBe('SpotLight');
+    expect(pointLight.light?.intensity).toBe(5);
+
+    // Update light properties
+    SceneManager.updateLight(scene, pointLight.id, { intensity: 12, distance: 25 });
+    expect(scene.gameObjects[pointLight.id].light?.intensity).toBe(12);
+    expect(scene.gameObjects[pointLight.id].light?.distance).toBe(25);
+
+    // Update behavior
+    SceneManager.updateBehavior(scene, torus.id, { type: 'Rotate', speed: 2 });
+    expect(scene.gameObjects[torus.id].behavior?.type).toBe('Rotate');
+    expect(scene.gameObjects[torus.id].behavior?.speed).toBe(2);
+  });
 });

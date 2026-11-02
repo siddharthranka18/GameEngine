@@ -215,7 +215,7 @@ export const Toolbar: React.FC = () => {
               <div className="px-3 py-1 font-semibold text-editor-textMuted border-b border-editor-panelBorder uppercase tracking-wider text-[10px]">
                 3D Primitives
               </div>
-              {(['Cube', 'Sphere', 'Plane', 'Cylinder', 'Empty'] as PrimitiveType[]).map((type) => (
+              {(['Cube', 'Sphere', 'Plane', 'Cylinder', 'Torus', 'Empty'] as PrimitiveType[]).map((type) => (
                 <button
                   key={type}
                   onClick={() => {
@@ -226,6 +226,22 @@ export const Toolbar: React.FC = () => {
                 >
                   <span className="w-2 h-2 rounded-full bg-editor-accent" />
                   <span>{type}</span>
+                </button>
+              ))}
+              <div className="px-3 py-1 font-semibold text-editor-textMuted border-t border-b border-editor-panelBorder uppercase tracking-wider text-[10px] mt-1">
+                Lighting
+              </div>
+              {(['PointLight', 'SpotLight'] as PrimitiveType[]).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => {
+                    addGameObject(type);
+                    setAddMenuOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-1.5 hover:bg-editor-hoverItem flex items-center space-x-2 text-editor-text"
+                >
+                  <span className="w-2 h-2 rounded-full bg-amber-400" />
+                  <span>{type === 'PointLight' ? 'Point Light' : 'Spot Light'}</span>
                 </button>
               ))}
             </div>

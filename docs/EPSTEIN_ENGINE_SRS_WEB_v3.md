@@ -81,3 +81,26 @@ EPSTEIN ENGINE was originally conceived as a native C++ desktop 3D game engine. 
   - GameObjects shall support arbitrary nesting of parent-child relationships.
   - System shall strictly prevent circular parenting (e.g., node A cannot become child of node B if node B is a descendant of node A).
   - Removing a parent shall re-parent children to root or delete hierarchy cleanly without dangling references.
+
+---
+
+### Module 3: Simulation & Behaviors (FR-12)
+
+- **FR-12: Live Simulation & Entity Behaviors**  
+  - System shall provide an interactive Play/Stop simulation loop.
+  - Entities shall support attaching behavior components:
+    - `Rotate`: Continuous multi-axis rotation with adjustable speed multiplier.
+    - `Bob`: Sinusoidal vertical oscillation / hovering.
+    - `PlayerWASD`: Real-time keyboard controller mapping (W/A/S/D and Arrow keys) for active character navigation.
+  - When simulation is stopped, entities shall cleanly restore their original authoring transforms.
+
+---
+
+### Module 4: Performance & Diagnostics (FR-13)
+
+- **FR-13: Real-Time Viewport Profiler HUD**  
+  - System shall render a non-intrusive diagnostic overlay on the 3D viewport.
+  - System shall track and display in real time:
+    - Render Frame Rate (**FPS**)
+    - Total Rendered **Triangles / Vertices**
+    - Active WebGL **Draw Calls**

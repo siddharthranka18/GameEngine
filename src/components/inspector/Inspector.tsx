@@ -11,9 +11,12 @@ import {
   Trash2,
   Copy,
   Info,
+  Lightbulb,
+  Zap,
 } from 'lucide-react';
 import { useEngineStore } from '../../store/engineStore';
 import { TransformSystem } from '../../services/transformSystem';
+import { BehaviorType } from '../../core/types';
 
 export const Inspector: React.FC = () => {
   const {
@@ -22,6 +25,8 @@ export const Inspector: React.FC = () => {
     renameGameObject,
     updateTransform,
     updateMaterial,
+    updateLight,
+    updateBehavior,
     setVisibility,
     reparentGameObject,
     removeGameObject,
@@ -67,6 +72,9 @@ export const Inspector: React.FC = () => {
   const candidateParents = Object.values(scene.gameObjects).filter(
     (o) => o.id !== selectedObj.id
   );
+
+  const isLight = selectedObj.type === 'PointLight' || selectedObj.type === 'SpotLight';
+  const behavior = selectedObj.behavior || { type: 'None', speed: 1 };
 
   return (
     <aside className="w-80 bg-editor-panel border-l border-editor-panelBorder flex flex-col text-xs select-none overflow-y-auto z-10">
@@ -123,14 +131,11 @@ export const Inspector: React.FC = () => {
 
         {/* Position */}
         <div className="mb-2">
-          <div className="flex items-center justify-between text-[11px] text-editor-textMuted mb-1">
-            <span>Position</span>
-            <span className="text-[10px]">X / Y / Z</span>
-          </div>
-          <div className="grid grid-cols-3 gap-1">
-            {(['X', 'Y', 'Z'] as const).map((axis, i) => (
-              <div key={`pos-${axis}`} className="flex items-center bg-editor-bg border border-editor-panelBorder rounded px-1.5 py-0.5">
-                <span className="text-[10px] font-bold text-red-400 w-3">{axis}</span>
+          <span className="text-[11px] text-editor-textMuted block mb-1">Position (X, Y, Z)</span>
+          <div className="grid grid-cols-3 gap-1.5">
+            {['X', 'Y', 'Z'].map((axis, i) => (
+              <div key={axis} className="flex items-center bg-editor-bg border border-editor-panelBorder rounded px-1.5 py-0.5">
+                <span className="text-[10px] font-bold text-red-400 mr-1">{axis}</span>
                 <input
                   type="number"
                   step="0.1"
@@ -145,14 +150,11 @@ export const Inspector: React.FC = () => {
 
         {/* Rotation */}
         <div className="mb-2">
-          <div className="flex items-center justify-between text-[11px] text-editor-textMuted mb-1">
-            <span>Rotation (&deg;)</span>
-            <span className="text-[10px]">X / Y / Z</span>
-          </div>
-          <div className="grid grid-cols-3 gap-1">
-            {(['X', 'Y', 'Z'] as const).map((axis, i) => (
-              <div key={`rot-${axis}`} className="flex items-center bg-editor-bg border border-editor-panelBorder rounded px-1.5 py-0.5">
-                <span className="text-[10px] font-bold text-emerald-400 w-3">{axis}</span>
+          <span className="text-[11px] text-editor-textMuted block mb-1">Rotation (deg)</span>
+          <div className="grid grid-cols-3 gap-1.5">
+            {['X', 'Y', 'Z'].map((axis, i) => (
+              <div key={axis} className="flex items-center bg-editor-bg border border-editor-panelBorder rounded px-1.5 py-0.5">
+                <span className="text-[10px] font-bold text-emerald-400 mr-1">{axis}</span>
                 <input
                   type="number"
                   step="1"
@@ -167,14 +169,11 @@ export const Inspector: React.FC = () => {
 
         {/* Scale */}
         <div>
-          <div className="flex items-center justify-between text-[11px] text-editor-textMuted mb-1">
-            <span>Scale</span>
-            <span className="text-[10px]">X / Y / Z</span>
-          </div>
-          <div className="grid grid-cols-3 gap-1">
-            {(['X', 'Y', 'Z'] as const).map((axis, i) => (
-              <div key={`scl-${axis}`} className="flex items-center bg-editor-bg border border-editor-panelBorder rounded px-1.5 py-0.5">
-                <span className="text-[10px] font-bold text-blue-400 w-3">{axis}</span>
+          <span className="text-[11px] text-editor-textMuted block mb-1">Scale</span>
+          <div className="grid grid-cols-3 gap-1.5">
+            {['X', 'Y', 'Z'].map((axis, i) => (
+              <div key={axis} className="flex items-center bg-editor-bg border border-editor-panelBorder rounded px-1.5 py-0.5">
+                <span className="text-[10px] font-bold text-blue-400 mr-1">{axis}</span>
                 <input
                   type="number"
                   step="0.1"
@@ -237,8 +236,72 @@ export const Inspector: React.FC = () => {
         )}
       </div>
 
-      {/* Material & Appearance (if applicable) */}
-      {selectedObj.type !== 'Empty' && (
+      {/* Light Component (for PointLight and SpotLight) */}
+      {isLight && (
+        <div className="p-3 border-b border-editor-panelBorder">
+          <div className="flex items-center space-x-1.5 font-semibold text-white mb-2">
+            <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
+            <span>Light Component</span>
+          </div>
+
+          {/* Light Color */}
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] text-editor-textMuted">Light Color</span>
+            <div className="flex items-center space-x-1.5">
+              <input
+                type="color"
+                value={selectedObj.material.color}
+                onChange={(e) => updateMaterial(selectedObj.id, { color: e.target.value })}
+                className="w-6 h-6 rounded cursor-pointer border border-editor-panelBorder bg-transparent"
+              />
+              <span className="font-mono text-[10px] text-white uppercase">
+                {selectedObj.material.color}
+              </span>
+            </div>
+          </div>
+
+          {/* Intensity */}
+          <div className="mb-2">
+            <div className="flex justify-between text-[11px] text-editor-textMuted mb-0.5">
+              <span>Intensity</span>
+              <span>{(selectedObj.light?.intensity ?? 5).toFixed(1)}</span>
+            </div>
+            <input
+              type="range"
+              min="0.5"
+              max="25"
+              step="0.5"
+              value={selectedObj.light?.intensity ?? 5}
+              onChange={(e) =>
+                updateLight(selectedObj.id, { intensity: parseFloat(e.target.value) })
+              }
+              className="w-full accent-amber-400 h-1 bg-editor-bg rounded appearance-none cursor-pointer"
+            />
+          </div>
+
+          {/* Range / Distance */}
+          <div>
+            <div className="flex justify-between text-[11px] text-editor-textMuted mb-0.5">
+              <span>Range / Distance</span>
+              <span>{(selectedObj.light?.distance ?? 15).toFixed(0)}m</span>
+            </div>
+            <input
+              type="range"
+              min="2"
+              max="50"
+              step="1"
+              value={selectedObj.light?.distance ?? 15}
+              onChange={(e) =>
+                updateLight(selectedObj.id, { distance: parseFloat(e.target.value) })
+              }
+              className="w-full accent-amber-400 h-1 bg-editor-bg rounded appearance-none cursor-pointer"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Material & Appearance (for standard primitives) */}
+      {!isLight && selectedObj.type !== 'Empty' && (
         <div className="p-3 border-b border-editor-panelBorder">
           <div className="flex items-center space-x-1.5 font-semibold text-white mb-2">
             <Palette className="w-3.5 h-3.5 text-editor-accent" />
@@ -313,6 +376,62 @@ export const Inspector: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Behavior / Script Component */}
+      <div className="p-3 border-b border-editor-panelBorder">
+        <div className="flex items-center space-x-1.5 font-semibold text-white mb-2">
+          <Zap className="w-3.5 h-3.5 text-emerald-400" />
+          <span>Behavior / Script</span>
+        </div>
+
+        <div className="flex flex-col space-y-2">
+          <div>
+            <label className="text-[11px] text-editor-textMuted block mb-1">Attached Behavior:</label>
+            <select
+              value={behavior.type}
+              onChange={(e) => {
+                const type = e.target.value as BehaviorType;
+                updateBehavior(selectedObj.id, {
+                  type,
+                  speed: behavior.speed || 1,
+                });
+              }}
+              className="w-full bg-editor-bg border border-editor-panelBorder rounded px-2 py-1 text-xs text-white outline-none focus:border-editor-accent"
+            >
+              <option value="None">None (Static Entity)</option>
+              <option value="Rotate">Rotator (Continuous Spin)</option>
+              <option value="Bob">Oscillator (Float & Bob)</option>
+              <option value="PlayerWASD">Player Controller (WASD / Arrows)</option>
+            </select>
+          </div>
+
+          {behavior.type !== 'None' && (
+            <div>
+              <div className="flex justify-between text-[11px] text-editor-textMuted mb-0.5">
+                <span>Speed / Multiplier</span>
+                <span>{(behavior.speed || 1).toFixed(1)}x</span>
+              </div>
+              <input
+                type="range"
+                min="0.2"
+                max="4"
+                step="0.1"
+                value={behavior.speed || 1}
+                onChange={(e) =>
+                  updateBehavior(selectedObj.id, {
+                    type: behavior.type,
+                    speed: parseFloat(e.target.value),
+                  })
+                }
+                className="w-full accent-emerald-400 h-1 bg-editor-bg rounded appearance-none cursor-pointer"
+              />
+              <p className="mt-1 text-[10px] text-editor-textMuted">
+                Active in real-time when <strong>Play</strong> is running in the viewport.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
     </aside>
   );
 };

@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import {
+  BehaviorData,
   GameObjectData,
+  LightData,
   LogEntry,
   LogLevel,
   MaterialData,
@@ -56,6 +58,8 @@ interface EngineState {
   renameGameObject: (id: string, newName: string) => void;
   updateTransform: (id: string, transform: Partial<TransformData>) => void;
   updateMaterial: (id: string, material: Partial<MaterialData>) => void;
+  updateLight: (id: string, light: Partial<LightData>) => void;
+  updateBehavior: (id: string, behavior: BehaviorData) => void;
   setVisibility: (id: string, visible: boolean) => void;
   reparentGameObject: (childId: string, newParentId: string | null) => boolean;
 
@@ -182,6 +186,13 @@ export const useEngineStore = create<EngineState>((set, get) => {
     },
 
     closeProject: () => {
+      const { isSceneDirty } = get();
+      if (isSceneDirty && typeof window !== 'undefined') {
+        const confirmClose = window.confirm(
+          'You have unsaved changes in your scene. Are you sure you want to close this project?'
+        );
+        if (!confirmClose) return;
+      }
       ProjectManager.closeProject();
       set({
         project: null,
@@ -371,6 +382,24 @@ export const useEngineStore = create<EngineState>((set, get) => {
 
       const sceneClone: SceneData = JSON.parse(JSON.stringify(scene));
       SceneManager.updateMaterial(sceneClone, id, material);
+      set({ scene: sceneClone, isSceneDirty: true });
+    },
+
+    updateLight: (id: string, light: Partial<LightData>) => {
+      const { scene } = get();
+      if (!scene || !scene.gameObjects[id]) return;
+
+      const sceneClone: SceneData = JSON.parse(JSON.stringify(scene));
+      SceneManager.updateLight(sceneClone, id, light);
+      set({ scene: sceneClone, isSceneDirty: true });
+    },
+
+    updateBehavior: (id: string, behavior: BehaviorData) => {
+      const { scene } = get();
+      if (!scene || !scene.gameObjects[id]) return;
+
+      const sceneClone: SceneData = JSON.parse(JSON.stringify(scene));
+      SceneManager.updateBehavior(sceneClone, id, behavior);
       set({ scene: sceneClone, isSceneDirty: true });
     },
 

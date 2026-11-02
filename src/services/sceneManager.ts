@@ -3,6 +3,8 @@ import {
   EngineResult,
   fail,
   GameObjectData,
+  BehaviorData,
+  LightData,
   MaterialData,
   ok,
   okVoid,
@@ -145,6 +147,17 @@ export class SceneManager {
     } else if (type === 'Cylinder') {
       newObj.transform.position = [0, 0.5, 0];
       newObj.material.color = '#10b981';
+    } else if (type === 'Torus') {
+      newObj.transform.position = [0, 0.5, 0];
+      newObj.material.color = '#8b5cf6';
+    } else if (type === 'PointLight') {
+      newObj.transform.position = [0, 2.5, 0];
+      newObj.material.color = '#fbbf24';
+      newObj.light = { intensity: 5, distance: 15, decay: 2 };
+    } else if (type === 'SpotLight') {
+      newObj.transform.position = [0, 3.5, 0];
+      newObj.material.color = '#f59e0b';
+      newObj.light = { intensity: 8, distance: 20, decay: 2 };
     } else if (type === 'Empty') {
       newObj.visible = true;
     }
@@ -257,6 +270,38 @@ export class SceneManager {
   /**
    * Set object visibility.
    */
+  static updateLight(
+    scene: SceneData,
+    objectId: string,
+    light: Partial<LightData>
+  ): EngineResult<void> {
+    const obj = scene.gameObjects[objectId];
+    if (!obj) return fail(EngineErrorCode.NotFound, `GameObject ${objectId} not found`);
+
+    obj.light = {
+      intensity: 5,
+      distance: 15,
+      decay: 2,
+      ...(obj.light || {}),
+      ...light,
+    };
+    scene.updatedAt = Date.now();
+    return okVoid();
+  }
+
+  static updateBehavior(
+    scene: SceneData,
+    objectId: string,
+    behavior: BehaviorData
+  ): EngineResult<void> {
+    const obj = scene.gameObjects[objectId];
+    if (!obj) return fail(EngineErrorCode.NotFound, `GameObject ${objectId} not found`);
+
+    obj.behavior = { ...behavior };
+    scene.updatedAt = Date.now();
+    return okVoid();
+  }
+
   static setVisibility(scene: SceneData, objectId: string, visible: boolean): EngineResult<void> {
     const obj = scene.gameObjects[objectId];
     if (!obj) return fail(EngineErrorCode.NotFound, `GameObject ${objectId} not found`);

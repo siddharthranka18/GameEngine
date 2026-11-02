@@ -246,5 +246,7 @@ sequenceDiagram
 | **FR-09** | Add / Remove GameObjects | `SceneManager`, `SceneHierarchy` | `TEST-SCENE-04` |
 | **FR-10** | Manage Transforms | `TransformSystem`, `Inspector`, `Gizmo` | `TEST-SCENE-05` |
 | **FR-11** | Parent-Child Hierarchy | `HierarchySystem`, `SceneHierarchy` | `TEST-SCENE-06` |
+| **FR-12** | Simulation & Behaviors | `Viewport3D`, `Inspector` | `TEST-SCENE-07` |
+| **FR-13** | Real-Time Viewport Profiler | `Viewport3D (MetricsCollector)` | `TEST-INT-02` |
 | **EXT-01** | JSON Export / Import | `StorageService`, `Toolbar` | `TEST-INT-01` |
 | **INT-01** | Full End-to-End Cycle | `EpsteinEngine Integrated Workflow` | `TEST-INT-02` |

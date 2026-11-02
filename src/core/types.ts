@@ -1,4 +1,25 @@
-export type PrimitiveType = 'Cube' | 'Sphere' | 'Plane' | 'Cylinder' | 'Empty';
+export type PrimitiveType =
+  | 'Cube'
+  | 'Sphere'
+  | 'Plane'
+  | 'Cylinder'
+  | 'Torus'
+  | 'PointLight'
+  | 'SpotLight'
+  | 'Empty';
+
+export type BehaviorType = 'None' | 'Rotate' | 'Bob' | 'PlayerWASD';
+
+export interface BehaviorData {
+  type: BehaviorType;
+  speed: number;
+}
+
+export interface LightData {
+  intensity: number;
+  distance: number;
+  decay: number;
+}
 
 export type TransformMode = 'translate' | 'rotate' | 'scale';
 
@@ -35,6 +56,8 @@ export interface GameObjectData {
   visible: boolean;
   transform: TransformData;
   material: MaterialData;
+  light?: LightData;
+  behavior?: BehaviorData;
 }
 
 export interface CameraConfig {

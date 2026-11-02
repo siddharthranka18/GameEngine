@@ -11,6 +11,9 @@ import {
   Circle,
   Square,
   Cylinder,
+  Disc,
+  Lightbulb,
+  Sun,
   MoreVertical,
   Plus,
   CornerDownRight,
@@ -77,6 +80,12 @@ export const SceneHierarchy: React.FC = () => {
         return <Circle className="w-3.5 h-3.5 text-red-400" />;
       case 'Plane':
         return <Square className="w-3.5 h-3.5 text-slate-400" />;
+      case 'Torus':
+        return <Disc className="w-3.5 h-3.5 text-purple-400" />;
+      case 'PointLight':
+        return <Lightbulb className="w-3.5 h-3.5 text-amber-400" />;
+      case 'SpotLight':
+        return <Sun className="w-3.5 h-3.5 text-yellow-400" />;
       case 'Cylinder':
         return <Cylinder className="w-3.5 h-3.5 text-emerald-400" />;
       case 'Empty':
